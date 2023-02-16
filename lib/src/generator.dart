@@ -876,10 +876,10 @@ class Generator {
           ..addAll('\n'.codeUnits);
       }
     }
-    bytes += emptyLines(1);
-    if (isNext) {
-      rowImg(next);
-    }
+    // bytes += emptyLines(1);
+    // if (isNext) {
+    //   rowImg(next);
+    // }
     return bytes;
   }
 }
