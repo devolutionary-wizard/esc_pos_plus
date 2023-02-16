@@ -449,115 +449,6 @@ class Generator {
     return bytes;
   }
 
-  /// Print a row.
-  ///
-  /// A row contains up to 12 columns. A column has a width between 1 and 12.
-  /// Total width of columns in one row must be equal 12.
-  List<int> row(List<PosColumn> cols) {
-    List<int> bytes = [];
-    final isSumValid = cols.fold(0, (int sum, col) => sum + col.width) == 12;
-    if (!isSumValid) {
-      throw Exception('Total columns width must be equal to 12');
-    }
-    bool isNextRow = false;
-    List<PosColumn> nextRow = <PosColumn>[];
-
-    for (int i = 0; i < cols.length; ++i) {
-      int colInd =
-          cols.sublist(0, i).fold(0, (int sum, col) => sum + col.width);
-      double charWidth = _getCharWidth(cols[i].styles);
-      double fromPos = _colIndToPosition(colInd);
-      final double toPos =
-          _colIndToPosition(colInd + cols[i].width) - spaceBetweenRows;
-      int maxCharactersNb = ((toPos - fromPos) / charWidth).floor();
-
-      if (!cols[i].containsChinese) {
-        // CASE 1: containsChinese = false
-        Uint8List encodedToPrint = cols[i].textEncoded != null
-            ? cols[i].textEncoded!
-            : _encode(cols[i].text);
-
-        // If the col's content is too long, split it to the next row
-        int realCharactersNb = encodedToPrint.length;
-        if (realCharactersNb > maxCharactersNb) {
-          // Print max possible and split to the next row
-          Uint8List encodedToPrintNextRow =
-              encodedToPrint.sublist(maxCharactersNb);
-          encodedToPrint = encodedToPrint.sublist(0, maxCharactersNb);
-          isNextRow = true;
-          nextRow.add(PosColumn(
-              textEncoded: encodedToPrintNextRow,
-              width: cols[i].width,
-              styles: cols[i].styles));
-        } else {
-          // Insert an empty col
-          nextRow.add(PosColumn(
-              text: '', width: cols[i].width, styles: cols[i].styles));
-        }
-        // end rows splitting
-        bytes += _text(
-          encodedToPrint,
-          styles: cols[i].styles,
-          colInd: colInd,
-          colWidth: cols[i].width,
-        );
-      } else {
-        // CASE 1: containsChinese = true
-        // Split text into multiple lines if it too long
-        int counter = 0;
-        int splitPos = 0;
-        for (int p = 0; p < cols[i].text.length; ++p) {
-          final int w = _isChinese(cols[i].text[p]) ? 2 : 1;
-          if (counter + w >= maxCharactersNb) {
-            break;
-          }
-          counter += w;
-          splitPos += 1;
-        }
-        String toPrintNextRow = cols[i].text.substring(splitPos);
-        String toPrint = cols[i].text.substring(0, splitPos);
-
-        if (toPrintNextRow.isNotEmpty) {
-          isNextRow = true;
-          nextRow.add(PosColumn(
-              text: toPrintNextRow,
-              containsChinese: true,
-              width: cols[i].width,
-              styles: cols[i].styles));
-        } else {
-          // Insert an empty col
-          nextRow.add(PosColumn(
-              text: '', width: cols[i].width, styles: cols[i].styles));
-        }
-
-        // Print current row
-        final list = _getLexemes(toPrint);
-        final List<String> lexemes = list[0];
-        final List<bool> isLexemeChinese = list[1];
-
-        // Print each lexeme using codetable OR kanji
-        for (var j = 0; j < lexemes.length; ++j) {
-          bytes += _text(
-            _encode(lexemes[j], isKanji: isLexemeChinese[j]),
-            styles: cols[i].styles,
-            colInd: colInd,
-            colWidth: cols[i].width,
-            isKanji: isLexemeChinese[j],
-          );
-          // Define the absolute position only once (we print one line only)
-          // colInd = null;
-        }
-      }
-    }
-
-    bytes += emptyLines(1);
-
-    if (isNextRow) {
-      row(nextRow);
-    }
-    return bytes;
-  }
-
   /// Print an image using (ESC *) command
   ///
   /// [image] is an instanse of class from [Image library](https://pub.dev/packages/image)
@@ -833,7 +724,119 @@ class Generator {
     return bytes;
   }
 
-// ************************ (end) Internal command generators ************************
+  /// Print a row.
+  ///
+  /// A row contains up to 12 columns. A column has a width between 1 and 12.
+  /// Total width of columns in one row must be equal 12.
+  List<int> row(List<PosColumn> cols) {
+    List<int> bytes = [];
+    final isSumValid = cols.fold(0, (int sum, col) => sum + col.width) == 12;
+    if (!isSumValid) {
+      throw Exception('Total columns width must be equal to 12');
+    }
+    bool isNextRow = false;
+    List<PosColumn> nextRow = <PosColumn>[];
+
+    for (int i = 0; i < cols.length; ++i) {
+      int colInd =
+          cols.sublist(0, i).fold(0, (int sum, col) => sum + col.width);
+      double charWidth = _getCharWidth(cols[i].styles);
+      double fromPos = _colIndToPosition(colInd);
+      final double toPos =
+          _colIndToPosition(colInd + cols[i].width) - spaceBetweenRows;
+      int maxCharactersNb = ((toPos - fromPos) / charWidth).floor();
+
+      if (!cols[i].containsChinese) {
+        // CASE 1: containsChinese = false
+        Uint8List encodedToPrint = cols[i].textEncoded != null
+            ? cols[i].textEncoded!
+            : _encode(cols[i].text);
+
+        // If the col's content is too long, split it to the next row
+        int realCharactersNb = encodedToPrint.length;
+        if (realCharactersNb > maxCharactersNb) {
+          // Print max possible and split to the next row
+          Uint8List encodedToPrintNextRow =
+              encodedToPrint.sublist(maxCharactersNb);
+          encodedToPrint = encodedToPrint.sublist(0, maxCharactersNb);
+          isNextRow = true;
+          nextRow.add(PosColumn(
+              textEncoded: encodedToPrintNextRow,
+              width: cols[i].width,
+              styles: cols[i].styles));
+        } else {
+          // Insert an empty col
+          nextRow.add(PosColumn(
+              text: '', width: cols[i].width, styles: cols[i].styles));
+        }
+        // end rows splitting
+        bytes += _text(
+          encodedToPrint,
+          styles: cols[i].styles,
+          colInd: colInd,
+          colWidth: cols[i].width,
+        );
+      } else {
+        // CASE 1: containsChinese = true
+        // Split text into multiple lines if it too long
+        int counter = 0;
+        int splitPos = 0;
+        for (int p = 0; p < cols[i].text.length; ++p) {
+          final int w = _isChinese(cols[i].text[p]) ? 2 : 1;
+          if (counter + w >= maxCharactersNb) {
+            break;
+          }
+          counter += w;
+          splitPos += 1;
+        }
+        String toPrintNextRow = cols[i].text.substring(splitPos);
+        String toPrint = cols[i].text.substring(0, splitPos);
+
+        if (toPrintNextRow.isNotEmpty) {
+          isNextRow = true;
+          nextRow.add(PosColumn(
+              text: toPrintNextRow,
+              containsChinese: true,
+              width: cols[i].width,
+              styles: cols[i].styles));
+        } else {
+          // Insert an empty col
+          nextRow.add(PosColumn(
+              text: '', width: cols[i].width, styles: cols[i].styles));
+        }
+
+        // Print current row
+        final list = _getLexemes(toPrint);
+        final List<String> lexemes = list[0];
+        final List<bool> isLexemeChinese = list[1];
+
+        // Print each lexeme using codetable OR kanji
+        for (var j = 0; j < lexemes.length; ++j) {
+          bytes += _text(
+            _encode(lexemes[j], isKanji: isLexemeChinese[j]),
+            styles: cols[i].styles,
+            colInd: colInd,
+            colWidth: cols[i].width,
+            isKanji: isLexemeChinese[j],
+          );
+          // Define the absolute position only once (we print one line only)
+          // colInd = null;
+        }
+      }
+    }
+
+    bytes += emptyLines(1);
+
+    if (isNextRow) {
+      row(nextRow);
+    }
+    return bytes;
+  }
+
+  /// Print a image.
+  ///
+  /// A row contains up to 12 columns. A column has a width between 1 and 12.
+  /// Total width of columns in one row must be equal 12.
 
   List<int> rowImg(List<PosImage> images) {
     List<int> bytes = [];
@@ -853,6 +856,7 @@ class Generator {
       const int lineHeight = highDensityVertical ? 3 : 1;
       final List<List<int>> blobs =
           _toColumnFormat(imageRotated, lineHeight * 8);
+
       for (int blobInd = 0; blobInd < blobs.length; blobInd++) {
         blobs[blobInd] = _packBitsIntoBytes(blobs[blobInd]);
       }
@@ -865,21 +869,31 @@ class Generator {
       header.add(densityByte);
       header.addAll(_intLowHigh(heightPx, 2));
       bytes += [27, 51, 16];
-      if (images[i].image != null) {
+      if (images.length != images.last) {
         isNext = true;
         next.add(PosImage(
-            image: image, styles: images[i].styles, width: images[i].width));
-      }
-      for (int i = 0; i < blobs.length; ++i) {
-        bytes += List.from(header)
-          ..addAll(blobs[i])
-          ..addAll('\n'.codeUnits);
+            image: images[i + 1].image,
+            styles: images[i + 1].styles,
+            width: images[i + 1].width));
+        for (int i = 0; i < blobs.length; ++i) {
+          bytes += List.from(header)
+            ..addAll(blobs[i])
+            ..addAll('\n'.codeUnits);
+        }
+      } else {
+        for (int i = 0; i < blobs.length; ++i) {
+          bytes += List.from(header)
+            ..addAll(blobs[i])
+            ..addAll('\n'.codeUnits);
+        }
       }
     }
-    // bytes += emptyLines(1);
-    // if (isNext) {
-    //   rowImg(next);
-    // }
+    bytes += emptyLines(1);
+    if (isNext) {
+      rowImg(next);
+    }
     return bytes;
   }
 }
+
+// ************************ (end) Internal command generators ************************
