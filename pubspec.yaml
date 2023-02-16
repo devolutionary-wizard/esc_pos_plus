@@ -1,7 +1,7 @@
 name: esc_pos_plus
 description: Basic Flutter/Dart classes for ESC/POS printing. Ticket class
   generates ESC/POS commands that can be sent to a thermal printer.
-version: 0.0.1
+version: 0.0.3
 homepage: https://github.com/seanglayz/esc_pos.git
 
 # The following line prevents the package from being accidentally published to

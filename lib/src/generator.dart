@@ -878,6 +878,9 @@ class Generator {
           ..addAll('\n'.codeUnits);
       }
     }
+    if(isNext){
+      rowImg(next);
+    }
     return bytes;
   }
 }
