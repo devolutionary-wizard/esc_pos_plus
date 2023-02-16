@@ -844,8 +844,6 @@ class Generator {
     bool isNext = false;
     List<PosImage> next = <PosImage>[];
     for (int i = 0; i < images.length; i++) {
-      int colInd =
-          images.sublist(0, i).fold(0, (int sum, image) => sum + image.width);
       final Image image = Image.from(images[i].image);
       const bool highDensityHorizontal = true;
       const bool highDensityVertical = true;
@@ -878,7 +876,8 @@ class Generator {
           ..addAll('\n'.codeUnits);
       }
     }
-    if(isNext){
+    bytes += emptyLines(1);
+    if (isNext) {
       rowImg(next);
     }
     return bytes;
