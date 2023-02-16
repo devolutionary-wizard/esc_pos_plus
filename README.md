@@ -1,4 +1,4 @@
-# esc_pos_utils_v2
+# esc_pos_plus
 
 [![Pub Version](https://img.shields.io/pub/v/esc_pos)](https://pub.dev/packages/esc_pos)
 
