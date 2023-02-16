@@ -869,7 +869,7 @@ class Generator {
       header.add(densityByte);
       header.addAll(_intLowHigh(heightPx, 2));
       bytes += [27, 51, 16];
-      if (images.length != images.last) {
+      if (images.sublist(i,i+1) != images.length) {
         isNext = true;
         next.add(PosImage(
             image: images[i + 1].image,
