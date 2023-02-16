@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Update rowimg.
+
 ## 0.0.5
 
 - Testing.
