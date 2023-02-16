@@ -832,7 +832,52 @@ class Generator {
     bytes += emptyLines(linesAfter + 1);
     return bytes;
   }
+
 // ************************ (end) Internal command generators ************************
 
+  List<int> rowImg(List<PosImage> images) {
+    List<int> bytes = [];
+    final isSumValid = images.fold(0, (int sum, col) => sum + col.width) == 12;
+    if (!isSumValid) {
+      throw Exception('Total columns width must be equal to 12');
+    }
+    bool isNext = false;
+    List<PosImage> next = <PosImage>[];
+    for (int i = 0; i < images.length; i++) {
+      int colInd =
+          images.sublist(0, i).fold(0, (int sum, image) => sum + image.width);
+      final Image image = Image.from(images[i].image);
+      const bool highDensityHorizontal = true;
+      const bool highDensityVertical = true;
+      invert(image);
+      flip(image, Flip.horizontal);
+      final Image imageRotated = copyRotate(image, 270);
+      const int lineHeight = highDensityVertical ? 3 : 1;
+      final List<List<int>> blobs =
+          _toColumnFormat(imageRotated, lineHeight * 8);
+      for (int blobInd = 0; blobInd < blobs.length; blobInd++) {
+        blobs[blobInd] = _packBitsIntoBytes(blobs[blobInd]);
+      }
+      final int heightPx = imageRotated.height;
+      const int densityByte =
+          // ignore: dead_code
+          (highDensityHorizontal ? 1 : 0) + (highDensityVertical ? 32 : 0);
 
+      final List<int> header = List.from(cBitImg.codeUnits);
+      header.add(densityByte);
+      header.addAll(_intLowHigh(heightPx, 2));
+      bytes += [27, 51, 16];
+      if (images[i].image != null) {
+        isNext = true;
+        next.add(PosImage(
+            image: image, styles: images[i].styles, width: images[i].width));
+      }
+      for (int i = 0; i < blobs.length; ++i) {
+        bytes += List.from(header)
+          ..addAll(blobs[i])
+          ..addAll('\n'.codeUnits);
+      }
+    }
+    return bytes;
+  }
 }
