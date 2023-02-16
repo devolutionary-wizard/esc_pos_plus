@@ -1,23 +1,25 @@
-import 'package:esc_pos/src/commands.dart';
+import 'package:esc_pos_plus/src/commands.dart';
 import 'dart:convert';
 
 class QRSize {
   const QRSize(this.value);
+
   final int value;
 
-  static const Size1 = QRSize(0x01);
-  static const Size2 = QRSize(0x02);
-  static const Size3 = QRSize(0x03);
-  static const Size4 = QRSize(0x04);
-  static const Size5 = QRSize(0x05);
-  static const Size6 = QRSize(0x06);
-  static const Size7 = QRSize(0x07);
-  static const Size8 = QRSize(0x08);
+  static const size1 = QRSize(0x01);
+  static const size2 = QRSize(0x02);
+  static const size3 = QRSize(0x03);
+  static const size4 = QRSize(0x04);
+  static const size5 = QRSize(0x05);
+  static const size6 = QRSize(0x06);
+  static const size7 = QRSize(0x07);
+  static const size8 = QRSize(0x08);
 }
 
 /// QR Correction level
 class QRCorrection {
   const QRCorrection._internal(this.value);
+
   final int value;
 
   /// Level L: Recovery Capacity 7%

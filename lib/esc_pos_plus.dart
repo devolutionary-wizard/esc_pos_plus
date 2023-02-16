@@ -1,5 +1,4 @@
-library esc_pos;
-
+library esc_pos_plus;
 
 export './src/barcode.dart';
 export './src/capability_profile.dart';

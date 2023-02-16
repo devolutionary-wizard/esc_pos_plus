@@ -1,4 +1,3 @@
-
 const esc = '\x1B';
 const gs = '\x1D';
 const fs = '\x1C';
