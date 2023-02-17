@@ -844,8 +844,7 @@ class Generator {
     if (!isSumValid) {
       throw Exception('Total columns width must be equal to 12');
     }
-    bool isNext = false;
-    List<PosImage> next = <PosImage>[];
+
     for (int i = 0; i < images.length; i++) {
       final Image image = Image.from(images[i].image);
       const bool highDensityHorizontal = true;
@@ -869,29 +868,15 @@ class Generator {
       header.add(densityByte);
       header.addAll(_intLowHigh(heightPx, 2));
       bytes += [27, 51, 16];
-      if (images.sublist(i,i+1) != images.length) {
-        isNext = true;
-        next.add(PosImage(
-            image: images[i + 1].image,
-            styles: images[i + 1].styles,
-            width: images[i + 1].width));
+
+
         for (int i = 0; i < blobs.length; ++i) {
           bytes += List.from(header)
             ..addAll(blobs[i])
             ..addAll('\n'.codeUnits);
-        }
-      } else {
-        for (int i = 0; i < blobs.length; ++i) {
-          bytes += List.from(header)
-            ..addAll(blobs[i])
-            ..addAll('\n'.codeUnits);
-        }
       }
     }
-    bytes += emptyLines(1);
-    if (isNext) {
-      rowImg(next);
-    }
+
     return bytes;
   }
 }
