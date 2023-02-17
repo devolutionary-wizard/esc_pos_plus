@@ -177,14 +177,11 @@ class _MyAppState extends State<MyApp> {
         .enerateImageFromString('នៅតែរក្សាកេរិ៍្ត​ឈ្មោះ', TextAlign.left);
     final t3 =
         await PrintUtils().enerateImageFromString('រឹងមាំ ', TextAlign.left);
-    final Image? t4 = decodeImage(t1);
-    final Image? t5 = decodeImage(t2);
-    final Image? t6 = decodeImage(t3);
 
-    bytes += generator.rowImg([
-      PosImage(image: t4!, width: 8),
-      PosImage(image: t5!, width: 2),
-      PosImage(image: t6!, width: 2),
+    bytes += generator.row([
+      PosColumn(text: 'heloow', width: 8),
+      PosColumn(text: 'wo', width: 2),
+      PosColumn(text: 'fgsdfd', width: 2),
     ]);
 
     bytes += generator.text('Test Print',

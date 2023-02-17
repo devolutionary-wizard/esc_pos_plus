@@ -833,52 +833,7 @@ class Generator {
     return bytes;
   }
 
-  /// Print a image.
-  ///
-  /// A row contains up to 12 columns. A column has a width between 1 and 12.
-  /// Total width of columns in one row must be equal 12.
 
-  List<int> rowImg(List<PosImage> images) {
-    List<int> bytes = [];
-    final isSumValid = images.fold(0, (int sum, col) => sum + col.width) == 12;
-    if (!isSumValid) {
-      throw Exception('Total columns width must be equal to 12');
-    }
-
-    for (int i = 0; i < images.length; i++) {
-      final Image image = Image.from(images[i].image);
-      const bool highDensityHorizontal = true;
-      const bool highDensityVertical = true;
-      invert(image);
-      flip(image, Flip.horizontal);
-      final Image imageRotated = copyRotate(image, 270);
-      const int lineHeight = highDensityVertical ? 3 : 1;
-      final List<List<int>> blobs =
-          _toColumnFormat(imageRotated, lineHeight * 8);
-
-      for (int blobInd = 0; blobInd < blobs.length; blobInd++) {
-        blobs[blobInd] = _packBitsIntoBytes(blobs[blobInd]);
-      }
-      final int heightPx = imageRotated.height;
-      const int densityByte =
-          // ignore: dead_code
-          (highDensityHorizontal ? 1 : 0) + (highDensityVertical ? 32 : 0);
-
-      final List<int> header = List.from(cBitImg.codeUnits);
-      header.add(densityByte);
-      header.addAll(_intLowHigh(heightPx, 2));
-      bytes += [27, 51, 16];
-
-
-        for (int i = 0; i < blobs.length; ++i) {
-          bytes += List.from(header)
-            ..addAll(blobs[i])
-            ..addAll('\n'.codeUnits);
-      }
-    }
-
-    return bytes;
-  }
 }
 
 // ************************ (end) Internal command generators ************************

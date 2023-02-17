@@ -1,16 +1,6 @@
-## 0.0.6
+## 0.1.0
 
-- Update rowimg.
-
-## 0.0.5
-
-- Testing.
-
-
-## 0.0.2
-
-- add image to row.
-
+- Example
 
 ## 0.0.1
 
