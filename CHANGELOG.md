@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Update dart
+
 ## 0.1.0
 
 - Example

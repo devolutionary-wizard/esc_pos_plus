@@ -7,4 +7,3 @@ export './src/pos_column.dart';
 export './src/pos_styles.dart';
 export './src/qrcode.dart';
 export './src/generator.dart';
-export './src/pos_image.dart';

@@ -13,7 +13,6 @@ enum PosImageFn { bitImageRaster, graphics }
 
 class PosTextSize {
   const PosTextSize._internal(this.value);
-
   final int value;
   static const size1 = PosTextSize._internal(1);
   static const size2 = PosTextSize._internal(2);
@@ -30,17 +29,20 @@ class PosTextSize {
 
 class PaperSize {
   const PaperSize._internal(this.value);
-
   final int value;
   static const mm58 = PaperSize._internal(1);
   static const mm80 = PaperSize._internal(2);
+  static const mm72 = PaperSize._internal(3);
 
-  int get width => value == PaperSize.mm58.value ? 372 : 558;
+  int get width => value == PaperSize.mm58.value
+      ? 372
+      : value == PaperSize.mm72.value
+      ? 503
+      : 558;
 }
 
 class PosBeepDuration {
   const PosBeepDuration._internal(this.value);
-
   final int value;
   static const beep50ms = PosBeepDuration._internal(1);
   static const beep100ms = PosBeepDuration._internal(2);
